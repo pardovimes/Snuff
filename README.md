@@ -1,2 +1,2 @@
 # Snuff
-Infiltration game achieved with unreal engine 4
+Third person infiltration game. Achieved with unreal engine 4
