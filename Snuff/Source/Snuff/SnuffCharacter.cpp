@@ -146,9 +146,13 @@ bool ASnuffCharacter::CanBeSeenFrom(const FVector& ObserverLocation, FVector& Ou
 	{
 		OutSeenLocation = GetActorLocation();
 		OutSightStrength = 1;
+
+		UE_LOG(LogTemp, Error, TEXT("True"));
+
 		return true;
 	}
 
+	UE_LOG(LogTemp, Error, TEXT("False"));
 	OutSightStrength = 0;
 	return false;
 }

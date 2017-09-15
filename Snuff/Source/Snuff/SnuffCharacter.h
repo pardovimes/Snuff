@@ -18,7 +18,7 @@ class ASnuffCharacter : public ACharacter, public IAISightTargetInterface
 	class UCameraComponent* FollowCamera;
 public:
 	ASnuffCharacter();
-	
+
 	virtual bool CanBeSeenFrom(const FVector& ObserverLocation, FVector& OutSeenLocation, int32& NumberOfLoSChecksPerformed, float& OutSightStrength, const AActor* IgnoreActor = NULL) const;
 
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
