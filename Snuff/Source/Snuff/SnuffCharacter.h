@@ -1,10 +1,11 @@
 // Copyright 1998-2017 Epic Games, Inc. All Rights Reserved.
 #pragma once
+#include "Perception/AISightTargetInterface.h"
 #include "GameFramework/Character.h"
 #include "SnuffCharacter.generated.h"
 
 UCLASS(config=Game)
-class ASnuffCharacter : public ACharacter
+class ASnuffCharacter : public ACharacter, public IAISightTargetInterface
 {
 	GENERATED_BODY()
 
@@ -17,6 +18,8 @@ class ASnuffCharacter : public ACharacter
 	class UCameraComponent* FollowCamera;
 public:
 	ASnuffCharacter();
+	
+	virtual bool CanBeSeenFrom(const FVector& ObserverLocation, FVector& OutSeenLocation, int32& NumberOfLoSChecksPerformed, float& OutSightStrength, const AActor* IgnoreActor = NULL) const;
 
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)

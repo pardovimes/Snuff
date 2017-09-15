@@ -127,3 +127,28 @@ void ASnuffCharacter::MoveRight(float Value)
 		AddMovementInput(Direction, Value);
 	}
 }
+
+bool ASnuffCharacter::CanBeSeenFrom(const FVector& ObserverLocation, FVector& OutSeenLocation, int32& NumberOfLoSChecksPerformed, float& OutSightStrength, const AActor* IgnoreActor) const
+{
+	static const FName NAME_AILineOfSight = FName(TEXT("TestPawnLineOfSight"));
+
+	FHitResult HitResult;
+	const bool bHit = GetWorld()->LineTraceSingleByObjectType(HitResult, ObserverLocation, GetActorLocation()
+		, FCollisionObjectQueryParams(ECC_TO_BITFIELD(ECC_WorldStatic) | ECC_TO_BITFIELD(ECC_WorldDynamic)) // << Changed this line
+		, FCollisionQueryParams(NAME_AILineOfSight, true, IgnoreActor));
+
+	NumberOfLoSChecksPerformed++;
+
+	// Add any other checks you want to perform here
+	// ...
+
+	if (bHit == false || (HitResult.Actor.IsValid() && HitResult.Actor->IsOwnedBy(this)))
+	{
+		OutSeenLocation = GetActorLocation();
+		OutSightStrength = 1;
+		return true;
+	}
+
+	OutSightStrength = 0;
+	return false;
+}
