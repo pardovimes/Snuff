@@ -139,20 +139,28 @@ bool ASnuffCharacter::CanBeSeenFrom(const FVector& ObserverLocation, FVector& Ou
 
 	NumberOfLoSChecksPerformed++;
 
-	// Add any other checks you want to perform here
-	// ...
+	//TODO now only head check, in future improve it
+	FVector socketLocation = GetMesh()->GetSocketLocation("head");
+
+	const bool bHitSocket = GetWorld()->LineTraceSingleByObjectType(HitResult, ObserverLocation, socketLocation
+		, FCollisionObjectQueryParams(ECC_TO_BITFIELD(ECC_WorldStatic) | ECC_TO_BITFIELD(ECC_WorldDynamic)) // << Changed this line
+		, FCollisionQueryParams(NAME_AILineOfSight, true, IgnoreActor));
+
+	if (bHitSocket == false) {
+		OutSeenLocation = GetActorLocation();
+		OutSightStrength = 1;
+		
+		return true;
+	}
 
 	if (bHit == false || (HitResult.Actor.IsValid() && HitResult.Actor->IsOwnedBy(this)))
 	{
 		OutSeenLocation = GetActorLocation();
 		OutSightStrength = 1;
 
-		UE_LOG(LogTemp, Error, TEXT("True"));
-
 		return true;
 	}
 
-	UE_LOG(LogTemp, Error, TEXT("False"));
 	OutSightStrength = 0;
 	return false;
 }
