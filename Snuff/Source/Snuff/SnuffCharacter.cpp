@@ -147,7 +147,7 @@ bool ASnuffCharacter::CanBeSeenFrom(const FVector& ObserverLocation, FVector& Ou
 		, FCollisionQueryParams(NAME_AILineOfSight, true, IgnoreActor));
 
 	if (bHitSocket == false) {
-		OutSeenLocation = GetActorLocation();
+		OutSeenLocation = socketLocation;
 		OutSightStrength = 1;
 		
 		return true;
