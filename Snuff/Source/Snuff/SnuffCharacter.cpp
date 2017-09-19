@@ -133,25 +133,32 @@ bool ASnuffCharacter::CanBeSeenFrom(const FVector& ObserverLocation, FVector& Ou
 	static const FName NAME_AILineOfSight = FName(TEXT("TestPawnLineOfSight"));
 
 	FHitResult HitResult;
+
+	auto sockets = GetMesh()->GetAllSocketNames();
+
+	for (int i = 0; i < sockets.Num(); i++)
+	{
+		FVector socketLocation = GetMesh()->GetSocketLocation(sockets[i]);
+
+		const bool bHitSocket = GetWorld()->LineTraceSingleByObjectType(HitResult, ObserverLocation, socketLocation
+			, FCollisionObjectQueryParams(ECC_TO_BITFIELD(ECC_WorldStatic) | ECC_TO_BITFIELD(ECC_WorldDynamic)) // << Changed this line
+			, FCollisionQueryParams(NAME_AILineOfSight, true, IgnoreActor));
+
+		NumberOfLoSChecksPerformed++;
+
+		if (bHitSocket == false || (HitResult.Actor.IsValid() && HitResult.Actor->IsOwnedBy(this))) {
+			OutSeenLocation = socketLocation;
+			OutSightStrength = 1;
+
+			return true;
+		}
+	}
+
 	const bool bHit = GetWorld()->LineTraceSingleByObjectType(HitResult, ObserverLocation, GetActorLocation()
 		, FCollisionObjectQueryParams(ECC_TO_BITFIELD(ECC_WorldStatic) | ECC_TO_BITFIELD(ECC_WorldDynamic)) // << Changed this line
 		, FCollisionQueryParams(NAME_AILineOfSight, true, IgnoreActor));
 
 	NumberOfLoSChecksPerformed++;
-
-	//TODO now only head check, in future improve it
-	FVector socketLocation = GetMesh()->GetSocketLocation("head");
-
-	const bool bHitSocket = GetWorld()->LineTraceSingleByObjectType(HitResult, ObserverLocation, socketLocation
-		, FCollisionObjectQueryParams(ECC_TO_BITFIELD(ECC_WorldStatic) | ECC_TO_BITFIELD(ECC_WorldDynamic)) // << Changed this line
-		, FCollisionQueryParams(NAME_AILineOfSight, true, IgnoreActor));
-
-	if (bHitSocket == false) {
-		OutSeenLocation = socketLocation;
-		OutSightStrength = 1;
-		
-		return true;
-	}
 
 	if (bHit == false || (HitResult.Actor.IsValid() && HitResult.Actor->IsOwnedBy(this)))
 	{
